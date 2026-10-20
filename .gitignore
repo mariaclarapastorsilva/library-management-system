@@ -34,35 +34,6 @@ MANIFEST
 
 # Installer logs
 pip-log.txt
-
-
-# ===== Projeto: dados sensíveis (NÃO versionar) =====
-# Variáveis de ambiente (senhas, SECRET_KEY, credenciais do banco)
-.env
-.env.*
-!.env.example
-
-# Configuração real dos clientes (IP do servidor da CTI, ID da máquina)
-config.ini
-cliente/config.ini
-!config.example.ini
-
-# Bancos de dados (contêm nome, curso e prontuário — LGPD)
-*.db
-*.sqlite
-*.sqlite3
-gerenciador/database/*.db
-
-# Relatórios exportados
-relatorios/
-*.pdf
-*.csv
-*.xlsx
-
-# Backups e logs
-backups/
-*.bak
-*.log
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports

@@ -1,51 +1,64 @@
 # 🖥️ Library Management System — Controle de Acesso às Máquinas
 
-Sistema para registrar o login dos usuários nos computadores da biblioteca e gerar relatórios de uso para o gerenciador.
+Sistema para registrar o login dos usuários nos computadores da biblioteca e gerar relatórios de uso para os administradores.
 
 Desenvolvido com **Python**, **Flask** e **SQL**.
 
 ## Sobre o projeto
 
-Ao usar uma máquina, o usuário faz login informando seus dados. O sistema registra automaticamente o **horário de entrada** e, ao encerrar a sessão, o **horário de saída**. O gerenciador acessa um painel para consultar e exportar relatórios.
+Ao usar uma máquina da biblioteca, o usuário faz login informando seus dados. O sistema registra automaticamente o **horário de entrada** e, ao encerrar a sessão, o **horário de saída**. Os dados ficam no **servidor central da CTI**, e os **administradores da biblioteca** acessam um painel para consultar e exportar relatórios.
 
 ## Arquitetura
 
-O projeto é dividido em **duas partes** que se comunicam pela rede:
+O projeto é dividido em **duas partes** — o **gerenciador** (servidor) e o **cliente** (máquina gerenciada) — distribuídas em dois locais:
 
 ```
-┌──────────────────────────┐            ┌──────────────────────────────┐
-│  CLIENTE (máquina 01)    │──┐         │        GERENCIADOR           │
-├──────────────────────────┤  │  HTTP   │  (servidor central)          │
-│  CLIENTE (máquina 02)    │──┼───────▶ │  - API Flask                 │
-├──────────────────────────┤  │  (API)  │  - Banco de dados SQL        │
-│  CLIENTE (máquina N)     │──┘         │  - Painel web + relatórios   │
-└──────────────────────────┘            └──────────────────────────────┘
+              BIBLIOTECA                                       CTI
+┌──────────────────────────────────┐            ┌──────────────────────────────┐
+│  CLIENTE (máquina 01)            │──┐         │   GERENCIADOR                │
+│  CLIENTE (máquina 02)            │──┤  HTTP   │   (servidor principal)       │
+│  CLIENTE (máquina N)             │──┼───────▶ │   - API Flask                │
+│                                  │  │  rede   │   - Banco de dados SQL       │
+│  ADMINISTRADOR (navegador) ──────│──┘         │   - Painel web + relatórios  │
+└──────────────────────────────────┘            └──────────────────────────────┘
 ```
 
-### 1. Gerenciador (servidor)
+| Onde | O que roda | Quem usa |
+|---|---|---|
+| **CTI** | Servidor principal (gerenciador): API, banco de dados e painel web | Equipe da CTI (manutenção) |
+| **Biblioteca** | Cliente em cada máquina de uso | Usuários (alunos/servidores) |
+| **Biblioteca** | Painel web acessado pelo navegador | Administradores da biblioteca |
 
-Roda em um computador central da biblioteca/CTI. É responsável por:
+### 1. Gerenciador (servidor — CTI)
+
+Instalado no servidor principal da CTI. É responsável por:
 
 - [ ] API que recebe os registros de entrada e saída enviados pelos clientes
 - [ ] Banco de dados com usuários, máquinas e sessões
-- [ ] Login do gerenciador (acesso restrito)
-- [ ] Painel com as sessões ativas (quem está usando cada máquina agora)
+- [ ] Painel web acessado pelos administradores da biblioteca pela rede interna
+- [ ] Login dos administradores (acesso restrito)
+- [ ] Sessões ativas (quem está usando cada máquina agora)
 - [ ] Cadastro das máquinas gerenciadas
 - [ ] Histórico de acessos com filtros (data, curso, prontuário, máquina)
 - [ ] Relatório com nome, curso, prontuário, máquina, entrada e saída
 - [ ] Exportar relatório em PDF / CSV / Excel
+- [ ] Backup do banco de dados
 
-### 2. Cliente (máquina gerenciada)
+### 2. Cliente (máquina gerenciada — biblioteca)
 
-Programa instalado em cada computador de uso dos usuários. É responsável por:
+Programa instalado em cada computador de uso da biblioteca. É responsável por:
 
 - [ ] Abrir automaticamente ao iniciar a sessão do computador
 - [ ] Tela de login em que o usuário informa nome, curso e prontuário
 - [ ] Bloquear o uso da máquina até o login ser feito
-- [ ] Enviar ao gerenciador o login (prontuário + identificação da máquina + horário de entrada)
+- [ ] Enviar ao servidor da CTI o login (prontuário + identificação da máquina + horário de entrada)
 - [ ] Botão de logout que envia o horário de saída
 - [ ] Registrar a saída também ao desligar/reiniciar ou encerrar a sessão do Windows/Linux
 - [ ] Guardar os registros localmente se o servidor estiver fora do ar e enviar depois
+
+### Administradores (biblioteca)
+
+Não precisam instalar nada: acessam o painel do gerenciador pelo navegador (ex.: `http://<servidor-cti>:5000`) a partir de um computador da biblioteca.
 
 ## Dados registrados
 
@@ -79,6 +92,12 @@ CREATE TABLE maquinas (
     descricao   VARCHAR(100)
 );
 
+CREATE TABLE administradores (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario     VARCHAR(50) UNIQUE NOT NULL,
+    senha_hash  VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE sessoes (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     prontuario  VARCHAR(20) NOT NULL REFERENCES usuarios(prontuario),
@@ -92,12 +111,12 @@ CREATE TABLE sessoes (
 
 ```
 library-management-system/
-├── gerenciador/            # servidor central
+├── gerenciador/            # servidor principal (CTI)
 │   ├── app/
 │   │   ├── __init__.py
 │   │   ├── models.py
 │   │   ├── api.py          # rotas que recebem dados dos clientes
-│   │   ├── painel.py       # rotas do painel web
+│   │   ├── painel.py       # rotas do painel dos administradores
 │   │   ├── relatorios.py
 │   │   ├── templates/
 │   │   └── static/
@@ -105,16 +124,16 @@ library-management-system/
 │   │   └── schema.sql
 │   ├── requirements.txt
 │   └── run.py
-├── cliente/                # programa das máquinas gerenciadas
+├── cliente/                # programa das máquinas da biblioteca
 │   ├── cliente.py          # tela de login e comunicação com a API
-│   ├── config.ini          # endereço do servidor e ID da máquina
+│   ├── config.ini          # endereço do servidor da CTI e ID da máquina
 │   └── requirements.txt
 └── README.md
 ```
 
 ## Como executar
 
-### Gerenciador
+### Gerenciador (no servidor da CTI)
 
 ```bash
 git clone https://github.com/mariaclarapastorsilva/library-management-system.git
@@ -125,14 +144,18 @@ pip install -r requirements.txt
 python run.py
 ```
 
-### Cliente (em cada máquina)
+### Cliente (em cada máquina da biblioteca)
 
 ```bash
 cd library-management-system/cliente
 pip install -r requirements.txt
-# configure o endereço do gerenciador em config.ini
+# configure o endereço do servidor da CTI em config.ini
 python cliente.py
 ```
+
+### Painel dos administradores (biblioteca)
+
+Abra no navegador: `http://<ip-do-servidor-cti>:5000`
 
 ## Autora
 

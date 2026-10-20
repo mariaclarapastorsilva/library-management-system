@@ -1,4 +1,4 @@
-# 🖥️ Library Management System — Controle de Acesso às Máquinas
+# 🖥️ Library Management System - Controle de Acesso às Máquinas
 
 Sistema para registrar o login dos usuários nos computadores da biblioteca e gerar relatórios de uso para os administradores.
 
@@ -159,4 +159,4 @@ Abra no navegador: `http://<ip-do-servidor-cti>:5000`
 
 ## Autora
 
-**Maria Clara Pastor** — Análise e Desenvolvimento de Sistemas, IFSP Campus Jacareí
+**Maria Clara Pastor** — Estagiária da CTI, IFSP Campus Jacareí

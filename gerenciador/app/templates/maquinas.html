@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block titulo %}Máquinas{% endblock %}
+{% block conteudo %}
+<h1>Máquinas</h1>
+<form class="cadastro" method="post">
+  <label>Identificador (hostname) <input name="identificador" required></label>
+  <label>Descrição <input name="descricao" placeholder="ex.: Bancada 3, perto da janela"></label>
+  <button class="botao">Salvar</button>
+</form>
+<p><small>Máquinas desconhecidas são cadastradas sozinhas no primeiro login. Salvar um identificador
+que já existe só atualiza a descrição. Máquinas desativadas recusam novos logins.</small></p>
+
+{% if maquinas %}
+<table>
+  <tr><th>Identificador</th><th>Descrição</th><th>Situação</th><th>Sessões</th><th></th></tr>
+  {% for m in maquinas %}
+  <tr class="{{ '' if m.ativa else 'inativa' }}">
+    <td>{{ m.identificador }}</td>
+    <td>{{ m.descricao }}</td>
+    <td>{% if not m.ativa %}desativada{% elif m.em_uso %}em uso{% else %}livre{% endif %}</td>
+    <td>{{ m.total_sessoes }}</td>
+    <td>
+      <form class="inline" method="post" action="{{ url_for('painel.alternar_maquina', maquina_id=m.id) }}">
+        <button class="botao {{ 'perigo' if m.ativa }}">{{ 'Desativar' if m.ativa else 'Ativar' }}</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="vazio">Nenhuma máquina cadastrada.</p>
+{% endif %}
+{% endblock %}

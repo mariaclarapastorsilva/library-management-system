@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block titulo %}Sessões ativas{% endblock %}
+{% block cabecalho %}<meta http-equiv="refresh" content="30">{% endblock %}
+{% block conteudo %}
+<h1>Sessões ativas ({{ sessoes|length }})</h1>
+{% if sessoes %}
+<table>
+  <tr><th>Máquina</th><th>Prontuário</th><th>Nome</th><th>Curso</th><th>Entrada</th><th></th></tr>
+  {% for s in sessoes %}
+  <tr>
+    <td>{{ s.maquina }}{% if s.maquina_descricao %} <small>({{ s.maquina_descricao }})</small>{% endif %}</td>
+    <td>{{ s.prontuario }}</td>
+    <td>{{ s.nome }}</td>
+    <td>{{ s.curso }}</td>
+    <td>{{ s.entrada }}</td>
+    <td>
+      <form class="inline" method="post" action="{{ url_for('painel.encerrar_sessao', sessao_id=s.id) }}"
+            onsubmit="return confirm('Encerrar esta sessão?')">
+        <button class="botao perigo">Encerrar</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="vazio">Nenhuma máquina em uso agora.</p>
+{% endif %}
+<p><small>A página atualiza sozinha a cada 30 segundos.</small></p>
+{% endblock %}

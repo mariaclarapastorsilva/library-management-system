@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block titulo %}Histórico{% endblock %}
+{% block conteudo %}
+<h1>Histórico de uso</h1>
+<form class="filtros" method="get">
+  <label>De <input type="date" name="inicio" value="{{ filtros.inicio }}"></label>
+  <label>Até <input type="date" name="fim" value="{{ filtros.fim }}"></label>
+  <label>Prontuário ou nome <input name="busca" value="{{ filtros.busca }}"></label>
+  <label>Curso
+    <select name="curso">
+      <option value="">Todos</option>
+      {% for c in cursos %}<option {% if c == filtros.curso %}selected{% endif %}>{{ c }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Máquina
+    <select name="maquina">
+      <option value="">Todas</option>
+      {% for m in maquinas %}<option {% if m == filtros.maquina %}selected{% endif %}>{{ m }}</option>{% endfor %}
+    </select>
+  </label>
+  <button class="botao">Filtrar</button>
+  <a href="{{ url_for('painel.historico') }}">Limpar</a>
+</form>
+
+<p class="exportar">Exportar com estes filtros:
+  {% for formato in ['csv', 'xlsx', 'pdf'] %}
+  <a href="{{ url_for('relatorios.historico', formato=formato, **filtros) }}">{{ formato|upper }}</a>
+  {% endfor %}
+</p>
+
+{% if sessoes %}
+<table>
+  <tr><th>Entrada</th><th>Saída</th><th>Duração</th><th>Máquina</th><th>Prontuário</th><th>Nome</th><th>Curso</th></tr>
+  {% for s in sessoes %}
+  <tr>
+    <td>{{ s.entrada }}</td>
+    <td>{{ s.saida or 'em uso' }}</td>
+    <td>{{ s.minutos|duracao }}</td>
+    <td>{{ s.maquina }}</td>
+    <td>{{ s.prontuario }}</td>
+    <td>{{ s.nome }}</td>
+    <td>{{ s.curso }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% if sessoes|length == limite %}
+<p><small>Mostrando as {{ limite }} sessões mais recentes. Use os filtros ou exporte para ver todas.</small></p>
+{% endif %}
+{% else %}
+<p class="vazio">Nenhuma sessão encontrada.</p>
+{% endif %}
+{% endblock %}

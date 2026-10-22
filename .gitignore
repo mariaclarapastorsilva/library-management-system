@@ -236,6 +236,10 @@ cliente/config.ini
 *.sqlite
 *.sqlite3
 gerenciador/database/*.db
+# Arquivos auxiliares do SQLite (modo WAL) também guardam dados
+*.db-wal
+*.db-shm
+*.db-journal
 
 # Relatórios exportados
 relatorios/
@@ -247,3 +251,8 @@ relatorios/
 backups/
 *.bak
 *.log
+
+# Estado local do cliente (fila offline e sessão em andamento têm nome e prontuário)
+cliente/fila.json
+cliente/sessao.json
+*.tmp

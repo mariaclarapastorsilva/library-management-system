@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block titulo %}Estatísticas{% endblock %}
+{% block cabecalho %}
+<style>
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .75rem; margin-bottom: 1.5rem; }
+  .card { border: 1px solid var(--borda); border-radius: 6px; padding: .9rem 1rem; }
+  .card .valor { font-size: 1.8rem; font-weight: 600; }
+  .card .rotulo { color: #656d76; font-size: .85rem; }
+  .graficos { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.5rem; }
+  .grafico h2 { font-size: 1rem; margin: 0 0 .75rem; }
+  .colunas { display: flex; align-items: flex-end; gap: 2px; height: 160px; border-bottom: 1px solid var(--borda); }
+  .coluna { flex: 1; height: 100%; display: flex; align-items: flex-end; }
+  .coluna span { width: 100%; background: var(--azul); border-radius: 4px 4px 0 0; }
+  .coluna:hover span { background: #163a5c; }
+  .eixo { display: flex; gap: 2px; font-size: .7rem; color: #656d76; margin-top: .25rem; }
+  .eixo span { flex: 1; text-align: center; white-space: nowrap; overflow: visible; }
+  .barras { display: grid; grid-template-columns: max-content 1fr max-content; gap: .35rem .6rem; align-items: center; font-size: .85rem; }
+  .barras .trilho { height: 14px; }
+  .barras .trilho span { display: block; height: 100%; background: var(--azul); border-radius: 0 4px 4px 0; }
+  .barras .valor { color: #1f2328; text-align: right; }
+</style>
+{% endblock %}
+
+{% macro colunas(serie, unidade, rotulo_a_cada=1) %}
+  {% set maior = serie | map(attribute=1) | max or 1 %}
+  <div class="colunas">
+    {% for rotulo, valor in serie %}
+    <div class="coluna" title="{{ rotulo }}: {{ valor }} {{ unidade }}">
+      {% if valor %}<span style="height: {{ (valor / maior * 100) | round(1) }}%"></span>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  <div class="eixo">
+    {% for rotulo, valor in serie %}<span>{{ rotulo if loop.index0 % rotulo_a_cada == 0 else '' }}</span>{% endfor %}
+  </div>
+{% endmacro %}
+
+{% macro barras(linhas, campo, formato) %}
+  {% set maior = linhas | map(attribute=campo) | max or 1 %}
+  <div class="barras">
+    {% for l in linhas %}
+    <span>{{ l.nome }}</span>
+    <div class="trilho" title="{{ l.nome }}: {{ formato.format(l[campo]) }}">
+      <span style="width: {{ (l[campo] / maior * 100) | round(1) }}%"></span>
+    </div>
+    <span class="valor">{{ formato.format(l[campo]) }}</span>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{% block conteudo %}
+<h1>Estatísticas de uso</h1>
+<form class="filtros" method="get">
+  <label>De <input type="date" name="inicio" value="{{ inicio }}"></label>
+  <label>Até <input type="date" name="fim" value="{{ fim }}"></label>
+  <button class="botao">Atualizar</button>
+</form>
+
+{% if not totais.sessoes %}
+<p class="vazio">Nenhuma sessão entre {{ inicio.strftime('%d/%m/%Y') }} e {{ fim.strftime('%d/%m/%Y') }}.</p>
+{% else %}
+<div class="cards">
+  <div class="card"><div class="valor">{{ totais.sessoes }}</div><div class="rotulo">sessões</div></div>
+  <div class="card"><div class="valor">{{ totais.alunos }}</div><div class="rotulo">alunos diferentes</div></div>
+  <div class="card"><div class="valor">{{ ((totais.minutos or 0) / 60) | round | int }} h</div><div class="rotulo">de uso no total</div></div>
+  <div class="card"><div class="valor">{{ (totais.media or 0) | round | int }} min</div><div class="rotulo">duração média por sessão</div></div>
+</div>
+
+<div class="graficos">
+  <section class="grafico">
+    <h2>Sessões por dia</h2>
+    {{ colunas(serie_dias, 'sessões', ((serie_dias | length) / 8) | round(0, 'ceil') | int) }}
+  </section>
+  <section class="grafico">
+    <h2>Horário de chegada</h2>
+    {{ colunas(serie_horas, 'sessões iniciadas') }}
+  </section>
+  <section class="grafico">
+    <h2>Dia da semana</h2>
+    {{ colunas(serie_semana, 'sessões') }}
+  </section>
+  <section class="grafico">
+    <h2>Máquinas mais usadas (horas)</h2>
+    {{ barras(maquinas, 'horas', '{:.0f} h') }}
+  </section>
+</div>
+
+<section class="grafico" style="margin-top: 1.5rem;">
+  <h2>Uso por curso</h2>
+  <table>
+    <tr><th>Curso</th><th>Sessões</th><th>Alunos</th><th>Horas de uso</th><th style="width: 40%"></th></tr>
+    {% set maior_curso = cursos | map(attribute='horas') | max or 1 %}
+    {% for c in cursos %}
+    <tr>
+      <td>{{ c.nome }}</td><td>{{ c.sessoes }}</td><td>{{ c.alunos }}</td><td>{{ '{:.0f}'.format(c.horas) }}</td>
+      <td><div class="barras" style="display: block;"><div class="trilho">
+        <span style="width: {{ (c.horas / maior_curso * 100) | round(1) }}%"></span></div></div></td>
+    </tr>
+    {% endfor %}
+  </table>
+</section>
+<p><small>Passe o mouse sobre as barras para ver os valores. Sessões ainda em andamento contam nas sessões, mas não nas horas.</small></p>
+{% endif %}
+{% endblock %}

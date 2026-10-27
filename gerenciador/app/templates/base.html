@@ -36,6 +36,7 @@
     <a href="{{ url_for('painel.ativas') }}">Sessões ativas</a>
     <a href="{{ url_for('painel.historico') }}">Histórico</a>
     <a href="{{ url_for('painel.maquinas') }}">Máquinas</a>
+    <a href="{{ url_for('estatisticas.pagina') }}">Estatísticas</a>
     <span class="direita">{{ g.admin.usuario }}
       <a href="{{ url_for('painel.trocar_senha') }}">Trocar senha</a>
       <form class="inline" method="post" action="{{ url_for('painel.sair') }}"><button>Sair</button></form>

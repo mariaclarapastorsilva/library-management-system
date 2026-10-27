@@ -37,9 +37,11 @@ def create_app(config=None):
     from .api import bp as api_bp
     from .painel import bp as painel_bp
     from .relatorios import bp as relatorios_bp
+    from .estatisticas import bp as estatisticas_bp
     app.register_blueprint(api_bp)
     app.register_blueprint(painel_bp)
     app.register_blueprint(relatorios_bp)
+    app.register_blueprint(estatisticas_bp)
 
     @app.template_filter('duracao')
     def duracao(minutos):

@@ -45,6 +45,7 @@ Instalado no servidor principal da CTI. É responsável por:
 - [x] Histórico de acessos com filtros (data, curso, prontuário/nome, máquina)
 - [x] Relatório com nome, curso, prontuário, máquina, entrada, saída e duração
 - [x] Exportar relatório em PDF / CSV / Excel
+- [x] Estatísticas de uso: sessões por dia, horários de pico, dia da semana, máquinas e cursos
 - [x] Backup do banco de dados
 - [x] Limpeza de registros antigos: apaga por completo o que passar do prazo de guarda (LGPD)
 
@@ -132,6 +133,7 @@ library-management-system/
 │   │   ├── api.py               # rotas que recebem dados dos clientes
 │   │   ├── painel.py            # rotas do painel dos administradores
 │   │   ├── relatorios.py        # exportação CSV / Excel / PDF
+│   │   ├── estatisticas.py      # página de estatísticas de uso
 │   │   └── templates/
 │   ├── database/
 │   │   ├── schema.sql
@@ -139,6 +141,7 @@ library-management-system/
 │   ├── criar_admin.py           # cria administrador / troca senha
 │   ├── backup.py                # cópia do banco
 │   ├── limpar_registros.py      # apaga sessões antigas (LGPD)
+│   ├── demo.py                  # painel de demonstração com dados fictícios
 │   ├── run.py                   # servidor de desenvolvimento
 │   ├── servir.py                # servidor de produção (waitress)
 │   └── requirements.txt
@@ -212,6 +215,17 @@ curl -X POST http://127.0.0.1:5000/api/logout -H "Content-Type: application/json
 - Uma máquina desconhecida é cadastrada sozinha no primeiro login.
 - Se a máquina já tem uma sessão aberta, ela é fechada antes de abrir a nova.
 - Se a variável `API_TOKEN` estiver definida no servidor, os clientes precisam enviar o cabeçalho `X-Token`.
+
+## Demonstração
+
+Para apresentar o sistema sem usar dados reais:
+
+```bash
+cd gerenciador
+python demo.py
+```
+
+O comando gera alunos e sessões fictícios de 6 semanas num banco separado (`database/demo.db`) e abre o painel em `http://127.0.0.1:5001/painel/`, com o usuário `demo` e a senha `demo1234`. O banco real não é tocado. Use `python demo.py --recriar` para gerar os dados de novo (por exemplo, para atualizar as sessões "em andamento").
 
 ## Testes
 

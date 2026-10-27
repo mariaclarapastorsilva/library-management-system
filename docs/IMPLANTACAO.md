@@ -18,7 +18,7 @@ O sistema já está pronto e testado. Os testes cobriram servidor fora do ar, qu
 | 6 | Ligar o bloqueio de tela | CTI + Biblioteca | Sim, junto com a GPO (seção 5) |
 | 7 | Por quanto tempo guardar os registros | Supervisão / Biblioteca | Definir um prazo (LGPD, seção 6) |
 | 8 | Aviso aos usuários sobre o registro dos dados | Supervisão | Texto curto na tela de login ou cartaz na biblioteca (LGPD) |
-| 9 | Licença e visibilidade do repositório no GitHub | Supervisão | Hoje está **público** e sem licença |
+| 9 | Licença e visibilidade do repositório no GitHub | Supervisão | ✅ **Decidido:** licença **MIT**. O repositório está público |
 
 ---
 

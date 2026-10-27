@@ -236,6 +236,10 @@ O passo a passo completo, com as decisões necessárias, as permissões, a GPO, 
 
 > ⚠️ O banco, os backups, os relatórios exportados e os arquivos `fila.json`/`sessao.json` do cliente contêm nome, curso e prontuário (LGPD) e estão no `.gitignore`. Não versione esses arquivos.
 
+## Licença
+
+Distribuído sob a licença MIT. Veja o arquivo [LICENSE](LICENSE).
+
 ## Autora
 
 **Maria Clara Pastor** — Estagiária da CTI, IFSP Campus Jacareí

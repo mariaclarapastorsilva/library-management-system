@@ -8,12 +8,12 @@ O sistema já está pronto e testado. Os testes cobriram servidor fora do ar, qu
 
 ## 1. Decisões antes de começar
 
-| # | Decisão | Quem decide | Sugestão |
+| # | Decisão | Quem decide | Sugestão / situação |
 |---|---|---|---|
-| 1 | Qual máquina da CTI será o servidor | CTI | Uma máquina sempre ligada, com **IP fixo** |
-| 2 | Faixa de IPs das máquinas da biblioteca | CTI | Necessária para liberar o firewall só para a rede interna |
+| 1 | Qual máquina da CTI será o servidor | CTI | ✅ **Decidido:** servidor na CTI com **IP fixo**. Falta saber qual é o IP, que vai no `config.ini` dos clientes |
+| 2 | Faixas de IPs das máquinas da biblioteca **e dos administradores** | CTI | Necessárias para liberar o firewall só para quem usa o sistema (seção 2.6) |
 | 3 | Usar token na API (`API_TOKEN`) | CTI | **Sim**: impede que qualquer computador da rede registre sessões falsas |
-| 4 | Quem serão os administradores do painel | Biblioteca | Um usuário por pessoa, sem senha compartilhada |
+| 4 | Quem serão os administradores do painel | Biblioteca | ✅ **Decidido:** vários administradores, **cada um com login próprio**, acessando de máquinas diferentes. Falta a lista de nomes para criar os usuários (seção 2.3) |
 | 5 | Senha de manutenção dos clientes | CTI | Conhecida só pela equipe da CTI |
 | 6 | Ligar o bloqueio de tela | CTI + Biblioteca | Sim, junto com a GPO (seção 5) |
 | 7 | Por quanto tempo guardar os registros | Supervisão / Biblioteca | Definir um prazo (LGPD, seção 6) |
@@ -87,13 +87,15 @@ Reinicie a máquina e confira se o painel abre sem ninguém fazer login.
 
 ### 2.6 Liberar o firewall
 
-Ajuste `remoteip` para a faixa da biblioteca (decisão 2):
+Ajuste `remoteip` para as faixas da biblioteca **e das máquinas dos administradores** (decisão 2). Várias faixas vão separadas por vírgula:
 
 ```bat
-netsh advfirewall firewall add rule name="Controle biblioteca" dir=in action=allow protocol=TCP localport=5000 remoteip=10.0.0.0/8
+netsh advfirewall firewall add rule name="Controle biblioteca" dir=in action=allow protocol=TCP localport=5000 remoteip=10.120.30.0/24,10.120.40.0/24
 ```
 
-**Teste:** num computador da biblioteca, abra `http://IP_DO_SERVIDOR:5000/painel/`. Se a tela de login aparecer, a rede está ok.
+Os IPs acima são só exemplo. Se as faixas ainda não estiverem definidas, `remoteip=10.0.0.0/8` libera toda a rede interna.
+
+**Teste:** abra `http://IP_DO_SERVIDOR:5000/painel/` num computador da biblioteca **e** na máquina de cada administrador. Se a tela de login aparecer, a rede está ok.
 
 ### 2.7 Backup diário
 
@@ -180,7 +182,8 @@ Depois de ajustar, **teste na conta de um aluno**: login, logout e o caso do ser
 
 ## 4. Checklist de validação
 
-- [ ] Painel abre a partir de um computador da biblioteca
+- [ ] Painel abre a partir de um computador da biblioteca e da máquina de cada administrador
+- [ ] Cada administrador entra com o próprio usuário e senha
 - [ ] Login no cliente aparece em "Sessões ativas"
 - [ ] Logout aparece no "Histórico" com o horário certo
 - [ ] **Servidor fora do ar:** pare o servidor, faça login e logout no cliente, ligue o servidor de novo. Em até 1 minuto a sessão aparece no histórico com os horários reais

@@ -1,5 +1,7 @@
 # 🖥️ Library Management System - Controle de Acesso às Máquinas
 
+[![Testes](https://github.com/mariaclarapastorsilva/library-management-system/actions/workflows/testes.yml/badge.svg)](https://github.com/mariaclarapastorsilva/library-management-system/actions/workflows/testes.yml)
+
 Sistema para registrar o login dos usuários nos computadores da biblioteca e gerar relatórios de uso para os administradores.
 
 Desenvolvido com **Python**, **Flask** e **SQL**.
@@ -210,6 +212,17 @@ curl -X POST http://127.0.0.1:5000/api/logout -H "Content-Type: application/json
 - Uma máquina desconhecida é cadastrada sozinha no primeiro login.
 - Se a máquina já tem uma sessão aberta, ela é fechada antes de abrir a nova.
 - Se a variável `API_TOKEN` estiver definida no servidor, os clientes precisam enviar o cabeçalho `X-Token`.
+
+## Testes
+
+Os testes automáticos cobrem a API, o painel, os relatórios, a limpeza de registros e a lógica do cliente (fila offline, configuração e senha de manutenção). Para rodar, na pasta raiz do projeto:
+
+```bash
+python -m pip install -r requirements-dev.txt
+python -m pytest
+```
+
+Os testes usam bancos e arquivos temporários: não mexem no banco real nem na fila do cliente. O GitHub também roda os testes a cada envio para a branch `main` (aba **Actions**).
 
 ## Robustez do cliente
 

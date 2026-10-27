@@ -219,6 +219,8 @@ curl -X POST http://127.0.0.1:5000/api/logout -H "Content-Type: application/json
 
 ## Implantação na CTI
 
+O passo a passo completo, com as decisões necessárias, as permissões, a GPO, o checklist de validação e o uso no dia a dia, está em **[docs/IMPLANTACAO.md](docs/IMPLANTACAO.md)**. Resumo:
+
 1. **Servidor de produção**: `python servir.py` (waitress, porta 5000). Variáveis opcionais: `HOST`, `PORT`, `DATABASE`, `SECRET_KEY`, `API_TOKEN`. Sem `SECRET_KEY`, uma chave é gerada e guardada em `gerenciador/instance/secret.key`.
 2. **Iniciar com o Windows**: crie uma tarefa no Agendador de Tarefas com o gatilho "Ao iniciar o sistema", a ação `python servir.py` e "Iniciar em" apontando para a pasta `gerenciador`. Outra opção é registrar como serviço com o [NSSM](https://nssm.cc).
 3. **Firewall**: libere a porta só para a rede interna (ajuste a faixa de IPs):

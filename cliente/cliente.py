@@ -124,6 +124,11 @@ class Fila:
                     status, corpo = self.api.enviar(evento['caminho'], evento['dados'])
                 except ErroRede:
                     break
+                if status == 401:
+                    # Token errado é problema de configuração, não do evento: mantém na fila
+                    # para ser enviado quando o config.ini for corrigido.
+                    log('servidor recusou o token; eventos mantidos na fila')
+                    break
                 if status >= 400:
                     log(f'evento descartado ({status} {corpo.get("erro", "")}): {evento}')
                 eventos.pop(0)
@@ -204,8 +209,12 @@ class Cliente:
                     self.fila.adicionar('/api/login', dados)
                 else:
                     if status >= 400:
-                        messagebox.showerror('Controle de uso',
-                                             corpo.get('erro', f'Erro {status}'), parent=self.root)
+                        if status == 401:
+                            mensagem = ('Este computador está com a configuração incorreta '
+                                        '(token do servidor). Avise a equipe da CTI.')
+                        else:
+                            mensagem = corpo.get('erro', f'Erro {status}')
+                        messagebox.showerror('Controle de uso', mensagem, parent=self.root)
                         return
             else:
                 self.fila.adicionar('/api/login', dados)

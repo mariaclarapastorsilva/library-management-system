@@ -12,9 +12,9 @@ O sistema já está pronto e testado. Os testes cobriram servidor fora do ar, qu
 |---|---|---|---|
 | 1 | Qual máquina da CTI será o servidor | CTI | ✅ **Decidido:** servidor na CTI com **IP fixo**. Falta saber qual é o IP, que vai no `config.ini` dos clientes |
 | 2 | Faixas de IPs das máquinas da biblioteca **e dos administradores** | CTI | Necessárias para liberar o firewall só para quem usa o sistema (seção 2.6) |
-| 3 | Usar token na API (`API_TOKEN`) | CTI | **Sim**: impede que qualquer computador da rede registre sessões falsas |
+| 3 | Usar token na API (`API_TOKEN`) | CTI | ✅ **Decidido: sim.** Impede que qualquer computador da rede registre sessões falsas. A CTI gera o token na instalação (seção 2.2) |
 | 4 | Quem serão os administradores do painel | Biblioteca | ✅ **Decidido:** vários administradores, **cada um com login próprio**, acessando de máquinas diferentes. Falta a lista de nomes para criar os usuários (seção 2.3) |
-| 5 | Senha de manutenção dos clientes | CTI | Conhecida só pela equipe da CTI |
+| 5 | Senha de manutenção dos clientes | CTI | ✅ **Decidido: sim.** Conhecida só pela equipe da CTI, escolhida e configurada na instalação (seção 3.2) |
 | 6 | Ligar o bloqueio de tela | CTI + Biblioteca | Sim, junto com a GPO (seção 5) |
 | 7 | Por quanto tempo guardar os registros | Supervisão / Biblioteca | Definir um prazo (LGPD, seção 6) |
 | 8 | Aviso aos usuários sobre o registro dos dados | Supervisão | Texto curto na tela de login ou cartaz na biblioteca (LGPD) |

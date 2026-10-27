@@ -88,6 +88,8 @@ def carregar_config():
         'bloqueio': cfg.get('cliente', 'bloqueio', fallback='nao').strip().lower()
                     in ('sim', 's', 'yes', 'true', '1'),
         'senha_manutencao': cfg.get('cliente', 'senha_manutencao', fallback='').strip(),
+        # Aviso de privacidade (LGPD) mostrado na tela de login; vazio = não mostra nada.
+        'aviso': cfg.get('cliente', 'aviso', raw=True, fallback='').strip(),
     }
 
 
@@ -336,6 +338,9 @@ class Cliente:
         self.status = tk.Label(quadro, fg='#b26b00')
         self.status.grid(row=6, column=0, columnspan=2)
         self.atualizar_status()
+        if self.config['aviso']:
+            tk.Label(quadro, text=self.config['aviso'], wraplength=440, justify='center',
+                     fg='#555', font=('Segoe UI', 9)).grid(row=7, column=0, columnspan=2, pady=(15, 0))
 
         self.root.bind('<Return>', lambda _e: self.entrar())
         self.campos['nome'].focus_set()

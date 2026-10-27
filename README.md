@@ -43,6 +43,7 @@ Instalado no servidor principal da CTI. É responsável por:
 - [x] Relatório com nome, curso, prontuário, máquina, entrada, saída e duração
 - [x] Exportar relatório em PDF / CSV / Excel
 - [x] Backup do banco de dados
+- [x] Limpeza de registros antigos (apagar ou anonimizar após o prazo de guarda — LGPD)
 
 ### 2. Cliente (máquina gerenciada — biblioteca)
 
@@ -134,6 +135,7 @@ library-management-system/
 │   │   └── criar_banco.py
 │   ├── criar_admin.py           # cria administrador / troca senha
 │   ├── backup.py                # cópia do banco
+│   ├── limpar_registros.py      # apaga/anonimiza sessões antigas (LGPD)
 │   ├── run.py                   # servidor de desenvolvimento
 │   ├── servir.py                # servidor de produção (waitress)
 │   └── requirements.txt
@@ -177,6 +179,7 @@ Opções do `config.ini`:
 | `[maquina] id` | Identificação da máquina no painel; vazio = hostname do Windows |
 | `[cliente] bloqueio` | `sim` = tela de login em tela cheia que não fecha até alguém entrar |
 | `[cliente] senha_manutencao` | Hash da senha que libera o atalho de manutenção (vazio = atalho desligado) |
+| `[cliente] aviso` | Aviso de privacidade (LGPD) mostrado na tela de login (vazio = não mostra) |
 
 **Saída de manutenção:** a equipe da CTI pode fechar o cliente em qualquer tela, inclusive com o bloqueio ativo, apertando **Ctrl+Shift+F12** e digitando a senha de manutenção. Se houver sessão aberta, ela é encerrada antes. Para definir a senha, rode `python cliente.py --gerar-senha` e cole a linha gerada no `config.ini`. Só o hash fica gravado, nunca a senha. Tentativas com senha errada ficam anotadas no `cliente.log`.
 

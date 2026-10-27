@@ -298,7 +298,12 @@ class Cliente:
 
     def manter_em_primeiro_plano(self):
         if self.sessao is None and self.root.winfo_exists():
+            # Desfaz minimização (ex.: Windows+D) e devolve a tela cheia e o foco.
+            if self.root.state() != 'normal':
+                self.root.deiconify()
+                self.root.attributes('-fullscreen', True)
             self.root.lift()
+            self.root.focus_force()
             self.root.after(1000, self.manter_em_primeiro_plano)
 
     def tela_sessao(self):

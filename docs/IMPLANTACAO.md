@@ -16,7 +16,7 @@ O sistema já está pronto e testado. Os testes cobriram servidor fora do ar, qu
 | 4 | Quem serão os administradores do painel | Biblioteca | ✅ **Decidido:** vários administradores, **cada um com login próprio**, acessando de máquinas diferentes. Falta a lista de nomes para criar os usuários (seção 2.3) |
 | 5 | Senha de manutenção dos clientes | CTI | ✅ **Decidido: sim.** Conhecida só pela equipe da CTI, escolhida e configurada na instalação (seção 3.2) |
 | 6 | Ligar o bloqueio de tela | CTI + Biblioteca | ✅ **Decidido: sim, a identificação é obrigatória.** `bloqueio = sim` em todas as máquinas, junto com a GPO na conta dos alunos (seção 5) |
-| 7 | Por quanto tempo guardar os registros | Biblioteca | ⏳ **Para a reunião com a biblioteca.** Sugestão: 1 ano com dados completos e, depois disso, manter só estatísticas sem nome e prontuário (LGPD, seção 6). Na dúvida, consultar o Encarregado de Dados do IFSP. A limpeza já está pronta (seção 6.2) |
+| 7 | Por quanto tempo guardar os registros | Biblioteca | ⏳ **Prazo para a reunião com a biblioteca.** ✅ Já decidido: cada registro é mantido **completo** (nome, curso e prontuário) ou **apagado por inteiro**, sem guarda parcial. Sugestão de prazo: 1 ano (LGPD, seção 6). Na dúvida, consultar o Encarregado de Dados do IFSP. A limpeza já está pronta (seção 6.2) |
 | 8 | Aviso aos usuários sobre o registro dos dados | Biblioteca | ⏳ **Para a reunião com a biblioteca.** Sugestão: texto curto na tela de login e/ou cartaz na biblioteca (LGPD). O aviso na tela já está pronto (seção 6.1) |
 | 9 | Licença e visibilidade do repositório no GitHub | Supervisão | ✅ **Decidido:** licença **MIT**. O repositório está público |
 
@@ -229,37 +229,34 @@ O texto aparece embaixo do formulário de login. Para continuar numa nova linha,
 
 ### 6.2 Limpeza dos registros antigos (decisão 7)
 
-O script `limpar_registros.py` trata as sessões mais antigas que o prazo decidido, de um destes dois modos:
+O script `limpar_registros.py` **apaga por completo** as sessões mais antigas que o prazo decidido. Enquanto um registro é mantido, ele fica inteiro (nome, curso, prontuário, máquina e horários). Não há guarda parcial nem anonimização.
 
-- `anonimizar`: troca nome e prontuário por "Anônimo", mantendo curso, máquina e horários. As estatísticas antigas continuam nos relatórios, mas sem dados pessoais.
-- `apagar`: remove as sessões antigas por completo.
-
-Nos dois modos, os alunos que ficarem sem nenhuma sessão saem do cadastro, e o arquivo do banco é reescrito para que os dados apagados não fiquem no disco.
+Os alunos que ficarem sem nenhuma sessão saem do cadastro, e o arquivo do banco é reescrito para que os dados apagados não fiquem no disco.
 
 **Primeiro, veja o que seria feito** (nada é alterado sem `--confirmar`):
 
 ```bat
 cd C:\controle-biblioteca\gerenciador
-python limpar_registros.py --meses 12 --modo anonimizar
+python limpar_registros.py --meses 12
 ```
 
 **Depois, faça um backup e rode de verdade:**
 
 ```bat
 python backup.py D:\backups\biblioteca 30
-python limpar_registros.py --meses 12 --modo anonimizar --confirmar
+python limpar_registros.py --meses 12 --confirmar
 ```
 
 **Agende para todo dia 1º do mês**, às 23h, depois do backup diário:
 
 ```bat
 schtasks /Create /SC MONTHLY /D 1 /ST 23:00 /RU SYSTEM /TN "Limpeza controle biblioteca" ^
-  /TR "\"C:\Program Files\Python312\python.exe\" C:\controle-biblioteca\gerenciador\limpar_registros.py --meses 12 --modo anonimizar --confirmar"
+  /TR "\"C:\Program Files\Python312\python.exe\" C:\controle-biblioteca\gerenciador\limpar_registros.py --meses 12 --confirmar"
 ```
 
-Troque `12` e `anonimizar` pelo que for decidido.
+Troque `12` pelo prazo decidido, em meses.
 
-Se o script avisar que há **sessões abertas desde antes do prazo**, são sessões de máquinas que sumiram sem fechar a sessão. Encerre-as no painel (**Sessões ativas → Encerrar**): na próxima limpeza elas serão tratadas.
+Se o script avisar que há **sessões abertas desde antes do prazo**, são sessões de máquinas que sumiram sem fechar a sessão. Encerre-as no painel (**Sessões ativas → Encerrar**): na próxima limpeza elas serão apagadas.
 
 Os backups também contêm dados pessoais, mas se renovam sozinhos: só os 30 mais recentes são mantidos.
 

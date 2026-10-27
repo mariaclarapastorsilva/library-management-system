@@ -43,7 +43,7 @@ Instalado no servidor principal da CTI. É responsável por:
 - [x] Relatório com nome, curso, prontuário, máquina, entrada, saída e duração
 - [x] Exportar relatório em PDF / CSV / Excel
 - [x] Backup do banco de dados
-- [x] Limpeza de registros antigos (apagar ou anonimizar após o prazo de guarda — LGPD)
+- [x] Limpeza de registros antigos: apaga por completo o que passar do prazo de guarda (LGPD)
 
 ### 2. Cliente (máquina gerenciada — biblioteca)
 
@@ -135,7 +135,7 @@ library-management-system/
 │   │   └── criar_banco.py
 │   ├── criar_admin.py           # cria administrador / troca senha
 │   ├── backup.py                # cópia do banco
-│   ├── limpar_registros.py      # apaga/anonimiza sessões antigas (LGPD)
+│   ├── limpar_registros.py      # apaga sessões antigas (LGPD)
 │   ├── run.py                   # servidor de desenvolvimento
 │   ├── servir.py                # servidor de produção (waitress)
 │   └── requirements.txt

@@ -56,6 +56,7 @@ Programa instalado em cada computador de uso da biblioteca (Windows). É respons
 - [x] Registrar a saída também ao desligar/reiniciar ou encerrar a sessão do Windows
 - [x] Guardar os registros localmente se o servidor estiver fora do ar e enviar depois
 - [x] Impedir que duas cópias do cliente rodem na mesma máquina
+- [x] Saída de manutenção protegida por senha para a equipe da CTI
 
 ### Administradores (biblioteca)
 
@@ -175,6 +176,9 @@ Opções do `config.ini`:
 | `[servidor] token` | Igual à variável `API_TOKEN` do servidor (vazio se não usar) |
 | `[maquina] id` | Identificação da máquina no painel; vazio = hostname do Windows |
 | `[cliente] bloqueio` | `sim` = tela de login em tela cheia que não fecha até alguém entrar |
+| `[cliente] senha_manutencao` | Hash da senha que libera o atalho de manutenção (vazio = atalho desligado) |
+
+**Saída de manutenção:** a equipe da CTI pode fechar o cliente em qualquer tela, inclusive com o bloqueio ativo, apertando **Ctrl+Shift+F12** e digitando a senha de manutenção. Se houver sessão aberta, ela é encerrada antes. Para definir a senha, rode `python cliente.py --gerar-senha` e cole a linha gerada no `config.ini`. Só o hash fica gravado, nunca a senha. Tentativas com senha errada ficam anotadas no `cliente.log`.
 
 Para o cliente abrir sozinho no logon do Windows, rode `instalar_inicio_automatico.bat` (ou `instalar_inicio_automatico.bat todos`, como administrador, para todas as contas).
 

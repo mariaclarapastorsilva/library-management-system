@@ -7,15 +7,20 @@ se a máquina for desligada sem logout, a saída é registrada com esse horário
 na próxima vez que o cliente abrir.
 """
 import configparser
+import getpass
+import hashlib
+import hmac
 import json
 import os
+import secrets
 import socket
+import sys
 import threading
 import tkinter as tk
 import urllib.error
 import urllib.request
 from datetime import datetime
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 
 PASTA = os.path.dirname(os.path.abspath(__file__))
 ARQ_CONFIG = os.path.join(PASTA, 'config.ini')
@@ -52,6 +57,25 @@ def gravar_json(caminho, dados):
     os.replace(temporario, caminho)
 
 
+ITERACOES_SENHA = 200_000
+
+
+def gerar_hash_senha(senha):
+    """Formato 'pbkdf2$iteracoes$sal$hash', para guardar no config.ini sem a senha em texto."""
+    sal = secrets.token_hex(16)
+    resumo = hashlib.pbkdf2_hmac('sha256', senha.encode(), bytes.fromhex(sal), ITERACOES_SENHA)
+    return f'pbkdf2${ITERACOES_SENHA}${sal}${resumo.hex()}'
+
+
+def conferir_senha(senha, guardado):
+    try:
+        _, iteracoes, sal, esperado = guardado.split('$')
+        resumo = hashlib.pbkdf2_hmac('sha256', senha.encode(), bytes.fromhex(sal), int(iteracoes))
+    except ValueError:
+        return False
+    return hmac.compare_digest(resumo.hex(), esperado)
+
+
 def carregar_config():
     cfg = configparser.ConfigParser()
     # O exemplo (versionado) dá os padrões; o config.ini da máquina (fora do git) sobrescreve.
@@ -63,6 +87,7 @@ def carregar_config():
         'maquina': cfg.get('maquina', 'id', fallback='').strip() or socket.gethostname(),
         'bloqueio': cfg.get('cliente', 'bloqueio', fallback='nao').strip().lower()
                     in ('sim', 's', 'yes', 'true', '1'),
+        'senha_manutencao': cfg.get('cliente', 'senha_manutencao', fallback='').strip(),
     }
 
 
@@ -143,11 +168,14 @@ class Cliente:
         self.fila = Fila(Api(config['url'], config['token'], config['timeout']))
         self.sessao = None
         self.envio = None
+        self.em_manutencao = False
 
         root.title('Controle de uso')
         root.protocol('WM_DELETE_WINDOW', self.ao_fechar)
         # O Tk no Windows dispara este protocolo quando o sistema vai desligar ou fazer logoff.
         root.protocol('WM_SAVE_YOURSELF', self.ao_desligar)
+        if config['senha_manutencao']:
+            root.bind_all('<Control-Shift-F12>', lambda _e: self.sair_manutencao())
 
         self.recuperar_sessao_perdida()
         self.tela_login()
@@ -248,6 +276,24 @@ class Cliente:
         self.fila.enviar()  # tentativa rápida; se falhar, o evento já está salvo na fila
         self.root.destroy()
 
+    def sair_manutencao(self):
+        """Ctrl+Shift+F12: a equipe da CTI fecha o cliente (mesmo com bloqueio) usando a senha."""
+        if self.em_manutencao:
+            return
+        self.em_manutencao = True  # pausa a tela de bloqueio, que roubaria o foco da caixa de senha
+        try:
+            senha = simpledialog.askstring('Manutenção', 'Senha de manutenção:', show='*', parent=self.root)
+            if senha is None:
+                return
+            if not conferir_senha(senha, self.config['senha_manutencao']):
+                log('tentativa de saída de manutenção com senha errada')
+                messagebox.showerror('Manutenção', 'Senha incorreta.', parent=self.root)
+                return
+            log('cliente encerrado pela saída de manutenção')
+            self.ao_desligar()
+        finally:
+            self.em_manutencao = False
+
     # ---- telas ----
 
     def limpar(self):
@@ -297,7 +343,9 @@ class Cliente:
             self.manter_em_primeiro_plano()
 
     def manter_em_primeiro_plano(self):
-        if self.sessao is None and self.root.winfo_exists():
+        if self.em_manutencao:
+            self.root.after(1000, self.manter_em_primeiro_plano)
+        elif self.sessao is None and self.root.winfo_exists():
             # Desfaz minimização (ex.: Windows+D) e devolve a tela cheia e o foco.
             if self.root.state() != 'normal':
                 self.root.deiconify()
@@ -341,6 +389,16 @@ def ja_esta_aberto():
 
 
 if __name__ == '__main__':
+    if '--gerar-senha' in sys.argv:
+        senha = getpass.getpass('Nova senha de manutenção: ')
+        if len(senha) < 8:
+            sys.exit('A senha precisa ter pelo menos 8 caracteres.')
+        if senha != getpass.getpass('Repita a senha: '):
+            sys.exit('As senhas não conferem.')
+        print('\nCole esta linha na seção [cliente] do config.ini:\n')
+        print(f'senha_manutencao = {gerar_hash_senha(senha)}')
+        sys.exit()
+
     raiz = tk.Tk()
     if ja_esta_aberto():
         raiz.withdraw()

@@ -270,7 +270,8 @@ Os backups também contêm dados pessoais, mas se renovam sozinhos: só os 30 ma
 | Máquina nova na biblioteca | Instalar o cliente (seção 3). Ela aparece sozinha no painel no primeiro login |
 | Máquina com defeito ou fora de uso | Painel → **Máquinas** → **Desativar**. Ela passa a recusar logins |
 | Relatório do mês | Painel → **Histórico** → filtrar as datas → **CSV**, **XLSX** ou **PDF** |
-| Administrador esqueceu a senha | No servidor: `python criar_admin.py usuario` |
+| Administrador quer trocar a senha | No painel: **Trocar senha**, no canto superior direito |
+| Administrador esqueceu a senha | A CTI, no servidor: `python criar_admin.py usuario` |
 | Cliente mostra "configuração incorreta" | O token do `config.ini` não bate com o do servidor. Os registros ficam guardados na máquina até a correção |
 
 ---

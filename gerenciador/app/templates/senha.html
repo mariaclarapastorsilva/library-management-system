@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block titulo %}Trocar senha{% endblock %}
+{% block conteudo %}
+<h1>Trocar senha</h1>
+<form method="post" class="cadastro" style="max-width: 360px; flex-direction: column; align-items: stretch;">
+  <label>Senha atual <input name="atual" type="password" required autofocus autocomplete="current-password"></label>
+  <label>Nova senha (mín. 8 caracteres) <input name="nova" type="password" required minlength="8" autocomplete="new-password"></label>
+  <label>Repita a nova senha <input name="confirmacao" type="password" required minlength="8" autocomplete="new-password"></label>
+  <button class="botao">Salvar</button>
+</form>
+{% endblock %}

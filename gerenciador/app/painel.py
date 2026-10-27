@@ -3,7 +3,7 @@ from functools import wraps
 
 from flask import (Blueprint, flash, g, redirect, render_template, request,
                    session, url_for)
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from .db import agora, get_db
 
@@ -82,6 +82,29 @@ def login():
             return redirect(proximo)
         flash('Usuário ou senha inválidos.', 'erro')
     return render_template('login.html')
+
+
+@bp.route('/senha', methods=['GET', 'POST'])
+@login_obrigatorio
+def trocar_senha():
+    if request.method == 'POST':
+        db = get_db()
+        atual = db.execute('SELECT senha_hash FROM administradores WHERE id = ?',
+                           (g.admin['id'],)).fetchone()['senha_hash']
+        nova = request.form.get('nova', '')
+        if not check_password_hash(atual, request.form.get('atual', '')):
+            flash('A senha atual está incorreta.', 'erro')
+        elif len(nova) < 8:
+            flash('A nova senha precisa ter pelo menos 8 caracteres.', 'erro')
+        elif nova != request.form.get('confirmacao', ''):
+            flash('A confirmação não confere com a nova senha.', 'erro')
+        else:
+            db.execute('UPDATE administradores SET senha_hash = ? WHERE id = ?',
+                       (generate_password_hash(nova), g.admin['id']))
+            db.commit()
+            flash('Senha alterada.', 'ok')
+            return redirect(url_for('painel.ativas'))
+    return render_template('senha.html')
 
 
 @bp.post('/sair')

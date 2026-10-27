@@ -37,6 +37,7 @@ Instalado no servidor principal da CTI. É responsável por:
 - [x] Banco de dados com usuários, máquinas e sessões
 - [x] Painel web acessado pelos administradores da biblioteca pela rede interna
 - [x] Login dos administradores (acesso restrito, senha com hash)
+- [x] Cada administrador troca a própria senha pelo painel
 - [x] Sessões ativas (quem está usando cada máquina agora), com opção de encerrar
 - [x] Cadastro das máquinas gerenciadas (com opção de desativar)
 - [x] Histórico de acessos com filtros (data, curso, prontuário/nome, máquina)

@@ -15,7 +15,7 @@ O sistema já está pronto e testado. Os testes cobriram servidor fora do ar, qu
 | 3 | Usar token na API (`API_TOKEN`) | CTI | ✅ **Decidido: sim.** Impede que qualquer computador da rede registre sessões falsas. A CTI gera o token na instalação (seção 2.2) |
 | 4 | Quem serão os administradores do painel | Biblioteca | ✅ **Decidido:** vários administradores, **cada um com login próprio**, acessando de máquinas diferentes. Falta a lista de nomes para criar os usuários (seção 2.3) |
 | 5 | Senha de manutenção dos clientes | CTI | ✅ **Decidido: sim.** Conhecida só pela equipe da CTI, escolhida e configurada na instalação (seção 3.2) |
-| 6 | Ligar o bloqueio de tela | CTI + Biblioteca | Sim, junto com a GPO (seção 5) |
+| 6 | Ligar o bloqueio de tela | CTI + Biblioteca | ✅ **Decidido: sim, a identificação é obrigatória.** `bloqueio = sim` em todas as máquinas, junto com a GPO na conta dos alunos (seção 5) |
 | 7 | Por quanto tempo guardar os registros | Supervisão / Biblioteca | Definir um prazo (LGPD, seção 6) |
 | 8 | Aviso aos usuários sobre o registro dos dados | Supervisão | Texto curto na tela de login ou cartaz na biblioteca (LGPD) |
 | 9 | Licença e visibilidade do repositório no GitHub | Supervisão | ✅ **Decidido:** licença **MIT**. O repositório está público |
@@ -197,7 +197,7 @@ Depois de ajustar, **teste na conta de um aluno**: login, logout e o caso do ser
 
 ## 5. Política de Grupo (GPO) para a conta dos alunos
 
-O bloqueio do cliente não impede Ctrl+Alt+Del, a tecla Windows nem o Gerenciador de Tarefas: isso só é possível pelo Windows. Sugestões para a conta dos alunos:
+A identificação é **obrigatória** (decisão 6). O bloqueio do cliente impede fechar a tela com Alt+F4 ou minimizá-la, mas não impede Ctrl+Alt+Del, a tecla Windows nem o Gerenciador de Tarefas: isso só é possível pelo Windows. Sem as regras abaixo, um aluno que conheça esses atalhos consegue fechar o cliente à força. Para a conta dos alunos:
 
 - Remover o Gerenciador de Tarefas (*Configuração do Usuário → Modelos Administrativos → Sistema → Opções Ctrl+Alt+Del*).
 - Impedir acesso ao Prompt de Comando e ao Editor do Registro.

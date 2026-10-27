@@ -16,8 +16,8 @@ O sistema já está pronto e testado. Os testes cobriram servidor fora do ar, qu
 | 4 | Quem serão os administradores do painel | Biblioteca | ✅ **Decidido:** vários administradores, **cada um com login próprio**, acessando de máquinas diferentes. Falta a lista de nomes para criar os usuários (seção 2.3) |
 | 5 | Senha de manutenção dos clientes | CTI | ✅ **Decidido: sim.** Conhecida só pela equipe da CTI, escolhida e configurada na instalação (seção 3.2) |
 | 6 | Ligar o bloqueio de tela | CTI + Biblioteca | ✅ **Decidido: sim, a identificação é obrigatória.** `bloqueio = sim` em todas as máquinas, junto com a GPO na conta dos alunos (seção 5) |
-| 7 | Por quanto tempo guardar os registros | Supervisão / Biblioteca | Definir um prazo (LGPD, seção 6) |
-| 8 | Aviso aos usuários sobre o registro dos dados | Supervisão | Texto curto na tela de login ou cartaz na biblioteca (LGPD) |
+| 7 | Por quanto tempo guardar os registros | Biblioteca | ⏳ **Para a reunião com a biblioteca.** Sugestão: 1 ano com dados completos e, depois disso, manter só estatísticas sem nome e prontuário (LGPD, seção 6). Na dúvida, consultar o Encarregado de Dados do IFSP |
+| 8 | Aviso aos usuários sobre o registro dos dados | Biblioteca | ⏳ **Para a reunião com a biblioteca.** Sugestão: texto curto na tela de login e/ou cartaz na biblioteca (LGPD) |
 | 9 | Licença e visibilidade do repositório no GitHub | Supervisão | ✅ **Decidido:** licença **MIT**. O repositório está público |
 
 ---
